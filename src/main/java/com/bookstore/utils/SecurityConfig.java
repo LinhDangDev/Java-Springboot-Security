@@ -17,13 +17,14 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    @Bean
-    public UserDetailsService userDetailsService(){
-        return new CustomUserDetailServices();
 
-    }
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public UserDetailsService userDetailsService() {
+        return new CustomUserDetailServices();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -35,26 +36,18 @@ public class SecurityConfig {
         return auth;
     }
 
-
     @Bean
-    public AccessDeniedHandler customAccessDeniedHandler(){
-        return (request, response, accessDeniedException) -> response.sendRedirect(request.getContextPath()+ "/error/403");
+    public AccessDeniedHandler customAccessDeniedHandler() {
+        return (request, response, accessDeniedException) -> response.sendRedirect(request.getContextPath() + "/error/403");
     }
 
-
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws
-            Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/css/**", "/js/**", "/", "/register",
-                                "/error")
-                        .permitAll()
-                        .requestMatchers( "/books/edit", "/books/delete")
-                        .hasAnyAuthority("ADMIN")
-                        .requestMatchers("/books/list", "/books/add")
-                        .hasAnyAuthority("ADMIN","USER")
+                        .requestMatchers("/css/**", "/js/**", "/", "/register", "/error", "/oauth2/**").permitAll()
+                        .requestMatchers("/books/edit", "/books/delete").hasAnyAuthority("ADMIN")
+                        .requestMatchers("/books/list", "/books/add").hasAnyAuthority("ADMIN", "USER")
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout.logoutUrl("/logout")
@@ -69,11 +62,16 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/")
                         .permitAll()
                 )
+                .oauth2Login(oauth2Login -> oauth2Login
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/")
+                        .permitAll()
+                )
                 .rememberMe(rememberMe -> rememberMe.key("uniqueAndSecret")
                         .tokenValiditySeconds(86400)
                         .userDetailsService(userDetailsService())
                 )
-                .exceptionHandling(exceptionHandling ->exceptionHandling.accessDeniedHandler(customAccessDeniedHandler()))
+                .exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler(customAccessDeniedHandler()))
                 .build();
     }
 }

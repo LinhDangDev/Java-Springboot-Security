@@ -30,4 +30,5 @@ public interface IUserRepository extends JpaRepository<User, Integer> {
     //Lấy danh sách từ UserID
     @Query(value = "SELECT r.name from role r INNER JOIN user_role ur ON r.id = ur.role_id WHERE ur.role_id = ?1 ",nativeQuery = true)
     String[] getRoleOfUser(Long userId);
+
 }

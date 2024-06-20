@@ -32,7 +32,7 @@ public class User {
 
     @Column(name = "name", length = 50, nullable = false)
     @Size(max = 50,message = "Ten cua ban phai it honw 50 ky tu")
-    @NotBlank(message = "TEn cua ban khong duoc de trong")
+    @NotBlank(message = "Tên cua ban khong duoc de trong")
     private String name;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
