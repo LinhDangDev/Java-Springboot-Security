@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 @Configuration
 @EnableWebSecurity
@@ -41,13 +42,20 @@ public class SecurityConfig {
         return (request, response, accessDeniedException) -> response.sendRedirect(request.getContextPath() + "/error/403");
     }
 
+
+
+
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/", "/register", "/error", "/oauth2/**").permitAll()
-                        .requestMatchers("/books/edit", "/books/delete").hasAnyAuthority("ADMIN")
-                        .requestMatchers("/books/list", "/books/add").hasAnyAuthority("ADMIN", "USER")
+                        .requestMatchers("/books/edit", "/books/delete", "/books/add","/categories/edit", "/categories/delete", "/categories/add")
+                        .hasAnyAuthority("ADMIN")
+                        .requestMatchers("/books/list","/categories/list").hasAnyAuthority("ADMIN", "USER")
+
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout.logoutUrl("/logout")
@@ -71,7 +79,10 @@ public class SecurityConfig {
                         .tokenValiditySeconds(86400)
                         .userDetailsService(userDetailsService())
                 )
-                .exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler(customAccessDeniedHandler()))
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler(customAccessDeniedHandler())
+
+                )
                 .build();
     }
 }

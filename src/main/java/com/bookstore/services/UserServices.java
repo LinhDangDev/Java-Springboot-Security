@@ -1,11 +1,14 @@
 package com.bookstore.services;
 
+import com.bookstore.entity.Role;
 import com.bookstore.entity.User;
 import com.bookstore.repository.IBookRepository;
 import com.bookstore.repository.IRoleRepository;
 import com.bookstore.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserServices {
@@ -23,5 +26,9 @@ public class UserServices {
         if(roleId != 0 && userId != 0 ) {
             userRepository.addRoleToUser(userId, roleId);
         }
+    }
+
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 }
